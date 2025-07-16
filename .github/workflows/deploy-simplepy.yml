@@ -1,34 +1,40 @@
-name: Deploy and Run simple.py on EC2 (Max Verbose)
+name: Copy and Run simple.py on EC2
 
 on:
   push:
     branches:
       - main
     paths:
-      - simple.py
+      - simple.py  # Only trigger if simple.py is updated
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Checkout the latest code from GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # Set up SSH to allow GitHub to access your EC2 instance
       - name: Set up SSH
         run: |
-          mkdir -p ~/.ssh
+          mkdir -p $HOME/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: [Verbose -vvv] SCP simple.py to EC2
+      # Ensure the target directory exists on EC2
+      - name: Ensure target directory exists
         run: |
-          scp -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            simple.py ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/
+          ssh -vvv -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/target-folder"
 
-      - name: [Verbose -vvv] Run simple.py on EC2
+      # Copy the updated python.py to your EC2 instance
+      - name: Copy simple.py to EC2
         run: |
-          ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "python3 /home/ec2-user/simple.py"
-#end
+          scp -vvv -i ~/.ssh/id_rsa simple.py ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/target-folder/
+
+      # Run python.py on your EC2 instance
+      - name: Run simple.py on EC2
+        run: |
+          ssh -vvv -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "python3 ~/target-folder/simple.py"
