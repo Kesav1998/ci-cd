@@ -31,4 +31,4 @@ jobs:
           ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
             "python3 /home/ec2-user/simple.py"
-
+#end
