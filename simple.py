@@ -1,5 +1,5 @@
 print("kk.simple")
-print("simple1")
+print("kk.simple1")
 print("simple2")
 print("simple3")
 print("simple4")
