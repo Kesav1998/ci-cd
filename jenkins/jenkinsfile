@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    environment {
+        TARGET_DIR = '/home/ec2-user/updated-files'
+    }
+
+    triggers {
+        pollSCM('* * * * *')
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git url: 'https://github.com/Kesav1998/ci-cd.git', branch: 'main'
+            }
+        }
+
+        stage('Copy simple.py') {
+            steps {
+                sh '''
+                    cp simple.py $TARGET_DIR/
+                    echo "Copied simple.py to $TARGET_DIR"
+                '''
+            }
+        }
+    }
+}
+
