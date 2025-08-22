@@ -8,3 +8,5 @@ print("simple6")
 print("simple7")
 print("simple8")
 print("docker file is automated using githubactions")
+print("trying new")
+

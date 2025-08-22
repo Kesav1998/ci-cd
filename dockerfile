@@ -1,3 +1,5 @@
+ENV JAVA_OPTS="-Xms512m -Xmx4096m"
+
 # Use the official Python base image
 FROM python:3.11-slim
 
